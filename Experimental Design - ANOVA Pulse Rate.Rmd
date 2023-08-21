@@ -1,0 +1,47 @@
+---
+title: "Stats 101B Final Project 2"
+author: "Anish Dulla, Kelsey Lin, Abbie Chong"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-06-06"
+---
+
+``` {r}
+library(ggplot2)
+library(multcompView)
+library(interactions)
+library(ggfortify)
+
+data <- read.csv("/Users/anishdulla/Desktop/final_proj2.csv")
+head(data)
+
+data$PulseChange <- abs(data$PulseBefore_bpm - data$PulseAfter_bpm)
+
+ANOVA_model <- aov(PulseChange ~ Gender + Drink_250ml * Exercise_30min, data = data)
+ANOVA_table <- summary(ANOVA_model)
+ANOVA_table
+
+plot <- autoplot(ANOVA_model) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+plot
+```
+
+|     Source     |  Df  |   Sum of Sq   |    Mean Sq    |     F    |  $Pr(>F)$      |
+|:---------------|-----:|--------------:|--------------:|---------:|---------------:|
+| Gender         |  1   |  44           |  44           | 10.43    |  **0.00149**   |
+| Drink          |  2   |  4989         |  2495         | 591.33   |  **< 2e-16**   |
+| Exercise       |  2   |  149290       |  74645        | 17694.75 |  **< 2e-16**   |
+| Drink:Exercise |  4   |  81           |  20           | 4.82     |  **0.00104**   |
+| Residuals      |  170 |  717          |  4            |          |                |
+
+
+|            Comparison          | Difference |  Lower  |  Upper  | P Value Adjusted |
+|:-------------------------------|-----------:|--------:|--------:|-----------------:|
+| Sports Caffeinated-Energy Drink| -9.85      | -10.74  | -8.96   |  **0.000539**
+| Water-Energy Drink             | -12.13     | -13.02  | -11.25  |  **< 2e-16** 
+| Water-Sports Caffeinated       | -2.28      | -3.17   | -1.40   |  **0.00472**
+| Run Outdoors-No Exercise       | 59.88      | 58.99   | 60.77   |  **< 4e-14** 
+| Swim Freestyle-No Exercise     | 62.23      | 61.35   | 63.12   |  **< 3e-15** 
+| Swim Freestyle-Run Outdoors    | 2.35       | 1.46    | 3.24    |  **0.00631**
